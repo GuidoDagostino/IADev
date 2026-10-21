@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cliente API Rest</title>
+
+    <script>
+        function mostrarResultado(data) {
+            document.getElementById('resultText').value = JSON.stringify(data, null, 2);
+        }
+
+        async function getByUrl(){
+            const url = document.getElementById('url').value;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                mostrarResultado(data);
+            } catch (error) {
+                mostrarResultado({ error: error.message });
+            }
+        }
+
+        async function postByUrl(){
+            const url = document.getElementById('url').value;
+            const body = document.getElementById('bodyText').value;
+
+            let datos;
+            try {
+                datos = JSON.parse(body);
+            } catch (error) {
+                mostrarResultado({ error: "El body no es un JSON válido" });
+                return;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
+                const data = await response.json();
+                mostrarResultado(data);
+            } catch (error) {
+                mostrarResultado({ error: error.message });
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <input type="text" id="url" placeholder="url" value="http://localhost:3000/personas">
+    <div>
+        <button id="btnGet" onclick="getByUrl()">GET</button>
+    </div>
+
+    <div>
+        Body
+        <div>
+            <textarea id="bodyText" rows="5" cols="40">{ "nombre": "Guido" }</textarea>
+        </div>
+    </div>
+    <button id="btnPost" onclick="postByUrl()">POST</button>
+
+    <div id="result">
+        Resultado
+        <div>
+            <textarea id="resultText" rows="15" cols="40"> </textarea>
+        </div>
+    </div>
+</body>
+</html>
